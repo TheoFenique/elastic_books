@@ -1,24 +1,19 @@
 version: "3.8"
 
 services:
-  es01:
+  elasticsearch:
+    container_name: "elasticsearch"
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
-    container_name: es01
     environment:
-      - node.name=es01
-      - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
-      - bootstrap.memory_lock=true
+      - "transport.host=0.0.0.0"
+      - "discovery.zen.minimum_master_nodes=1"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - data01:/usr/share/elasticsearch/data
     ports:
-      - 9200:9200
+      - "9200:9200"
 
   api:
     build:
@@ -30,8 +25,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - es01
-
+      - elasticsearch
 
 volumes:
   data01:
