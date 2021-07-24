@@ -12,6 +12,9 @@ func main() {
 	r := mux.NewRouter()
 	es := config.InitDB()
 	log.Println(es.Info())
+
+	bi := config.CreateBulkIndexer(es)
+
 	r.HandleFunc("/", simpleRoot)
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
