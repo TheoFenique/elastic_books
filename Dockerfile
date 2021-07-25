@@ -1,10 +1,10 @@
 FROM golang:alpine AS api_dev
 
 EXPOSE 8080
-WORKDIR /go/src/app
-COPY api/go.mod api/go.sum ./
-RUN go mod download
+WORKDIR /go/src/elastic_books/api
+COPY api/go.mod .
+COPY api/go.sum .
+RUN go mod download -x
 COPY api/ .
-RUN export GO111MODULE=on && go build -o api main.go
 
-ENTRYPOINT /go/src/app/api
+CMD ["go", "run", "main.go"]

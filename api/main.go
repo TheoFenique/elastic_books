@@ -2,6 +2,7 @@ package main
 
 import (
 	"elastic_books/api/config"
+	"elastic_books/api/controllers"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"log"
@@ -10,9 +11,8 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-	es := config.InitDB()
-	log.Println(es.Info())
-	r.HandleFunc("/", simpleRoot)
+	config.InitDB()
+	r.HandleFunc("/book", controllers.PostBook).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
