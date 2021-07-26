@@ -6,6 +6,7 @@ import (
 	"elastic_books/api/models"
 	"encoding/json"
 	"errors"
+	"github.com/olivere/elastic/v7"
 	"log"
 )
 
@@ -30,4 +31,28 @@ func CreateBook(ctx context.Context, book *models.Book) error {
 		return errors.New("error insert book")
 	}
 	return nil
+}
+
+func SearchBooks(ctx context.Context, key, value string) ([]models.Book, error) {
+	searchSource := elastic.NewSearchSource()
+	searchSource.Query(elastic.NewMatchQuery(key, value))
+
+	searchRes, err := config.EsClient.Search().Index("books").SearchSource(searchSource).Do(ctx)
+	if err != nil {
+		log.Println("Error searching book")
+		return nil, err
+	}
+
+	var books []models.Book
+	for _, res := range searchRes.Hits.Hits {
+		var book models.Book
+		err := json.Unmarshal(res.Source, &book)
+		if err != nil {
+			return nil, errors.New("cannot decode book")
+		}
+
+		books = append(books, book)
+	}
+
+	return nil, nil
 }

@@ -16,11 +16,13 @@ func InitDB() {
 
 	exists, err := EsClient.IndexExists("books").Do(ctx)
 	if err != nil {
+		log.Println("Error get index")
 		log.Fatal(err)
 	}
 	if !exists {
 		_, err := EsClient.CreateIndex("books").BodyString(models.BookMapping).Do(ctx)
 		if err != nil {
+			log.Println("Error create index")
 			log.Fatal(err)
 		}
 	}

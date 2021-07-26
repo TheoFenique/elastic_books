@@ -28,10 +28,16 @@ func PostBook(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(fmt.Sprintf("Sucessful insertion: %v", book))
 }
 
-func GetBook(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode("GetBooks")
-}
+func SearchBooks(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
 
-func GetBooks(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode("GetBooks")
+	key := "title"
+	value := "title"
+
+	books, err := es.SearchBooks(ctx, key, value)
+	if err != nil {
+		json.NewEncoder(w).Encode(err.Error())
+	}
+
+	json.NewEncoder(w).Encode(books)
 }
