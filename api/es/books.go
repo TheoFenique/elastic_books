@@ -19,18 +19,18 @@ func prepareForES(value interface{}) (string, error) {
 	return string(b), nil
 }
 
-func CreateBook(ctx context.Context, book *models.Book) error {
+func CreateBook(ctx context.Context, book *models.Book) (string, error) {
 	s, err := prepareForES(book)
 	if err != nil {
 		log.Println("Cannot marshal book into bytes")
-		return errors.New("cannot create book")
+		return "", errors.New("cannot create book")
 	}
 
-	_, err = config.EsClient.Index().Index("books").BodyJson(s).Do(ctx)
+	res, err := config.EsClient.Index().Index("books").BodyJson(s).Do(ctx)
 	if err != nil {
-		return errors.New("error insert book")
+		return "", errors.New("error insert book")
 	}
-	return nil
+	return res.Result, nil
 }
 
 func SearchBooks(ctx context.Context, key, value string) ([]models.Book, error) {
@@ -54,5 +54,5 @@ func SearchBooks(ctx context.Context, key, value string) ([]models.Book, error) 
 		books = append(books, book)
 	}
 
-	return nil, nil
+	return books, nil
 }

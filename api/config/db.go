@@ -14,22 +14,29 @@ func InitDB() {
 	ctx := context.Background()
 	getESClient()
 
-	exists, err := EsClient.IndexExists("books").Do(ctx)
-	if err != nil {
-		log.Println("Error get index")
-		log.Fatal(err)
-	}
-	if !exists {
-		_, err := EsClient.CreateIndex("books").BodyString(models.BookMapping).Do(ctx)
+	for {
+		exists, err := EsClient.IndexExists("books").Do(ctx)
 		if err != nil {
-			log.Println("Error create index")
-			log.Fatal(err)
+			log.Println("Error create index, retrying in 5seconds...")
+			time.Sleep(5 * time.Second)
+			continue
 		}
+		if !exists {
+			_, err := EsClient.CreateIndex("books").BodyString(models.BookMapping).Do(ctx)
+			if err != nil {
+				log.Println("Error create index, retrying in 5seconds...")
+				time.Sleep(5 * time.Second)
+			}
+			log.Println("Successfully started ES!")
+			break
+		}
+		log.Println("Successfully started ES!")
+		break
 	}
 }
 
 func getESClient() {
-	for i := 0; i < 3; i++ {
+	for {
 		log.Println("Trying to connect to ES...")
 		client, err := elastic.NewClient(elastic.SetURL("http://es01:9200"),
 			elastic.SetSniff(false),
@@ -43,5 +50,4 @@ func getESClient() {
 		log.Println("Connected to the DB!")
 		return
 	}
-	log.Fatal("Cannot connect to DB")
 }

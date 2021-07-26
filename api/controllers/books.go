@@ -20,12 +20,12 @@ func PostBook(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("Error decoding body")
 	}
 
-	err = es.CreateBook(ctx, &book)
+	res, err := es.CreateBook(ctx, &book)
 	if err != nil {
 		log.Printf("Error create book: %s", err.Error())
 	}
 
-	json.NewEncoder(w).Encode(fmt.Sprintf("Sucessful insertion: %v", book))
+	json.NewEncoder(w).Encode(fmt.Sprintf("Sucessful insertion: %v", res))
 }
 
 func SearchBooks(w http.ResponseWriter, r *http.Request) {

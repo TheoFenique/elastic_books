@@ -17,10 +17,13 @@ const BookMapping = `{
 			"name": {
 				"type": "text"
 			},
+			"title": {
+				"type": "text"
+			},
 			"author": {
 				"type": "text"
 			},
-			"Abstract": {
+			"abstract": {
 				"type": "text"
 			}
 		}
