@@ -3,10 +3,10 @@ package controllers
 import (
 	"context"
 	"elastic_books/api/es"
+	"elastic_books/api/helpers"
 	"elastic_books/api/models"
 	"encoding/json"
-	"fmt"
-	"log"
+	"errors"
 	"net/http"
 )
 
@@ -16,28 +16,35 @@ func PostBook(w http.ResponseWriter, r *http.Request) {
 	var book models.Book
 	err := json.NewDecoder(r.Body).Decode(&book)
 	if err != nil {
-		log.Printf("Err decode body: %s", err.Error())
-		json.NewEncoder(w).Encode("Error decoding body")
+		helpers.EncodeError(w, err)
+		return
 	}
 
-	res, err := es.CreateBook(ctx, &book)
+	_, err = es.CreateBook(ctx, &book)
 	if err != nil {
-		log.Printf("Error create book: %s", err.Error())
+		helpers.EncodeError(w, err)
+		return
 	}
 
-	json.NewEncoder(w).Encode(fmt.Sprintf("Sucessful insertion: %v", res))
+	helpers.EncodeData(w, book)
 }
 
 func SearchBooks(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	key := "title"
-	value := "title"
+	key := r.URL.Query().Get("key")
+	value := r.URL.Query().Get("key")
 
-	books, err := es.SearchBooks(ctx, key, value)
-	if err != nil {
-		json.NewEncoder(w).Encode(err.Error())
+	if key != "" && value != "" {
+		books, err := es.SearchBooks(ctx, key, value)
+		if err != nil {
+			helpers.EncodeError(w, err)
+			return
+		}
+
+		helpers.EncodeData(w, books)
+	} else {
+		helpers.EncodeError(w, errors.New("need 'key' and 'value' GET parameters"))
 	}
 
-	json.NewEncoder(w).Encode(books)
 }
