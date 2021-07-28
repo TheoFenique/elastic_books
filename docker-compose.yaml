@@ -37,6 +37,17 @@ services:
       - backend
     stdin_open: true # docker run -i
     tty: true        # docker run -t
+  
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+    environment:
+      SERVER_HOST="0"
+      ELASTICSEARCH_URL=http://elasticsearch:9200
+      XPACK_SECURITY_ENABLED=false
+    ports:
+      - 5601:5601
+    networks: 
+      - backend
 
 volumes:
   data01:
