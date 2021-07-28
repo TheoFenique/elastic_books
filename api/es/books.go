@@ -30,6 +30,9 @@ func CreateBook(ctx context.Context, book *models.Book) (string, error) {
 	if err != nil {
 		return "", errors.New("error insert book")
 	}
+
+	book.ID = res.Id
+
 	return res.Result, nil
 }
 
@@ -47,6 +50,7 @@ func SearchBooks(ctx context.Context, key, value string) ([]models.Book, error) 
 	for _, res := range searchRes.Hits.Hits {
 		var book models.Book
 		err := json.Unmarshal(res.Source, &book)
+		book.ID = res.Id
 		if err != nil {
 			return nil, errors.New("cannot decode book")
 		}
