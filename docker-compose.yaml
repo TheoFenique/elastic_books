@@ -37,6 +37,18 @@ services:
       - backend
     stdin_open: true # docker run -i
     tty: true        # docker run -t
+  
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+    environment:
+      SERVER_NAME: kibana.elastic-books.local
+      ELASTICSEARCH_URL: http://es01:9200
+    depends_on:
+      - es01
+    ports:
+      - "5601:5601"
+    networks: 
+      - backend
 
 volumes:
   data01:
